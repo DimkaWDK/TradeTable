@@ -6,7 +6,7 @@ $(document).ready(function() {
 
   itemNames.forEach(function(itemName) {
     // Получаем цену предмета на Steam
-    $.getJSON(`https://api.csgofloat.com/?url=steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S${steamApiKey}A%listing%Dapp%570%2Frender%3Flistingid%3D${encodeURI(itemName)}`, function(data) {
+    $.getJSON(`https://api.csgofloat.com/?url=steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S6569325A8A038A851BB8CD5870282C04A%listing%Dapp%570%2Frender%3Flistingid%3D${encodeURI(itemName)}`, function(data) {
       const itemSteamPrice = data.assets[0].lowest_price;
 
       // Если есть API-ключ для CS.Money, получаем цену предмета на нем
