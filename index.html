@@ -5,6 +5,7 @@
     <title>Цены на предметы CS:GO</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="script.js"></script>
   </head>
   <body>
     <header>
@@ -21,26 +22,5 @@
       <tbody id="item-table">
       </tbody>
     </table>
-    <script>
-      $(document).ready(function() {
-        const apiKey = "6569325A8A038A851BB8CD5870282C04";
-        const itemNames = ["AK-47 | Redline", "M4A1-S | Hyper Beast", "AWP | Asiimov"];
-
-        itemNames.forEach(function(itemName) {
-          $.getJSON(`https://api.csgofloat.com/?url=steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S${apiKey}A%listing%Dapp%570%2Frender%3Flistingid%3D${encodeURI(itemName)}`, function(data) {
-            const itemSteamPrice = data.assets[0].lowest_price;
-            const itemCsMoneyPrice = data.suggested_price;
-
-            const newRow = $("<tr></tr>");
-            const nameCell = $("<td></td>").text(itemName);
-            const steamCell = $("<td></td>").text(itemSteamPrice);
-            const csMoneyCell = $("<td></td>").text(itemCsMoneyPrice);
-
-            newRow.append(nameCell, steamCell, csMoneyCell);
-            $("#item-table").append(newRow);
-          });
-        });
-      });
-    </script>
   </body>
 </html>

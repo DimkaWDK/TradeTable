@@ -1,33 +1,36 @@
-const steamApiUrl = "https://api.steamapis.com/market/items/730";
-const csMoneyApiUrl = "https://cs.money/price/all_json";
+$(document).ready(function() {
+  const steamApiKey = "6569325A8A038A851BB8CD5870282C04";
+  const csmoneyApiKey = ""; // Здесь нужно добавить API-ключ для CS.Money, если он есть
 
-const itemsTable = document.getElementById("itemsTable");
-const itemsTableBody = itemsTable.getElementsByTagName("tbody")[0];
+  const itemNames = ["AK-47 | Redline", "M4A1-S | Hyper Beast", "AWP | Asiimov"];
 
-// Получаем данные из API Steam
-fetch(steamApiUrl)
-  .then(response => response.json())
-  .then(data => {
-    // Обходим полученный объект и добавляем каждый элемент в таблицу
-    for (const item of Object.values(data.items)) {
-      const itemName = item.name;
-      const itemPrice = item.prices.median_price;
-      const itemRow = `<tr><td>${itemName}</td><td>${itemPrice}</td><td></td></tr>`;
-      itemsTableBody.innerHTML += itemRow;
-    }
-  });
+  itemNames.forEach(function(itemName) {
+    // Получаем цену предмета на Steam
+    $.getJSON(`https://api.csgofloat.com/?url=steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S${steamApiKey}A%listing%Dapp%570%2Frender%3Flistingid%3D${encodeURI(itemName)}`, function(data) {
+      const itemSteamPrice = data.assets[0].lowest_price;
 
-// Получаем данные из API cs.money
-fetch(csMoneyApiUrl)
-  .then(response => response.json())
-  .then(data => {
-    // Обходим полученный объект и обновляем строку в таблице, если найдено совпадение по названию предмета
-    for (const item of Object.values(data)) {
-      const itemName = item.market_name;
-      const itemPrice = item.price;
-      const itemRow = itemsTableBody.querySelector(`tr td:first-child:not(:empty):not(:first-child):not([colspan])`);
-      if (itemRow.innerHTML === itemName) {
-        itemRow.nextElementSibling.innerHTML = itemPrice;
+      // Если есть API-ключ для CS.Money, получаем цену предмета на нем
+      if (csmoneyApiKey) {
+        $.getJSON(`https://cs.money/prices/api/v1/get-by-item/${encodeURI(itemName)}`, {key: csmoneyApiKey}, function(data) {
+          const itemCsMoneyPrice = data[0].price;
+
+          // Создаем новую строку в таблице с полученными данными
+          const newRow = $("<tr></tr>");
+          const nameCell = $("<td></td>").text(itemName);
+          const steamCell = $("<td></td>").text(itemSteamPrice);
+          const csMoneyCell = $("<td></td>").text(itemCsMoneyPrice);
+
+          newRow.append(nameCell, steamCell, csMoneyCell);
+          $("#item-table").append(newRow);
+        });
+      } else { // Если нет API-ключа для CS.Money, создаем строку только с ценой на Steam
+        const newRow = $("<tr></tr>");
+        const nameCell = $("<td></td>").text(itemName);
+        const steamCell = $("<td></td>").text(itemSteamPrice);
+
+        newRow.append(nameCell, steamCell);
+        $("#item-table").append(newRow);
       }
-    }
+    });
   });
+});
