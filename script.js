@@ -5,14 +5,20 @@ $(document).ready(function() {
   const itemNames = ["AK-47 | Redline", "M4A1-S | Hyper Beast", "AWP | Asiimov"];
 
   itemNames.forEach(function(itemName) {
+    // Формируем URL для получения цены предмета на Steam
+    const steamUrl = `https://steamcommunity.com/market/priceoverview/?appid=730&currency=1&market_hash_name=AK-47%20%7C%20Redline%20%28Field-Tested%29`;
+
     // Получаем цену предмета на Steam
-    $.getJSON(`https://api.csgofloat.com/?url=steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S6569325A8A038A851BB8CD5870282C04A%listing%Dapp%570%2Frender%3Flistingid%3D${encodeURI(itemName)}`, function(data) {
-      const itemSteamPrice = data.assets[0].lowest_price;
+    $.getJSON(steamUrl, {jsonp: "callback"}, function(steamData) {
+      const itemSteamPrice = steamData.lowest_price;
 
       // Если есть API-ключ для CS.Money, получаем цену предмета на нем
       if (csmoneyApiKey) {
-        $.getJSON(`https://cs.money/prices/api/v1/get-by-item/${encodeURI(itemName)}`, {key: csmoneyApiKey}, function(data) {
-          const itemCsMoneyPrice = data[0].price;
+        // Формируем URL для получения цены предмета на CS.Money
+        const csMoneyUrl = `https://cs.money/prices/api/v1/get-by-item?item=${encodeURIComponent(itemName)}&key=${csmoneyApiKey}`;
+
+        $.getJSON(csMoneyUrl, function(csMoneyData) {
+          const itemCsMoneyPrice = csMoneyData.price;
 
           // Создаем новую строку в таблице с полученными данными
           const newRow = $("<tr></tr>");
