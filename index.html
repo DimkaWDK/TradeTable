@@ -24,6 +24,27 @@
     </tbody>
   </table>
 
-  <script src="script.js"></script>
+  <script src="script.js">
+    const apiKey = "6569325A8A038A851BB8CD5870282C04";
+const itemName = "AK-47 | Redline (Field-Tested)";
+const itemHashName = encodeURI(itemName);
+const appid = 730;
+const url = `https://api.csgofloat.com/?url=steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S${appid}A${itemHashName}%20D%20${apiKey}`;
+
+fetch(url)
+  .then(response => response.json())
+  .then(data => {
+    const table = document.getElementById("price-table");
+    const row = table.insertRow(-1);
+    const itemNameCell = row.insertCell(0);
+    const steamPriceCell = row.insertCell(1);
+    const csMoneyPriceCell = row.insertCell(2);
+    itemNameCell.innerHTML = itemName;
+    steamPriceCell.innerHTML = data.steam_price;
+    csMoneyPriceCell.innerHTML = data.csmoney_price;
+  })
+  .catch(error => console.log(error));
+
+  </script>
 </body>
 </html>
