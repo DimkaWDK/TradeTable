@@ -1,50 +1,45 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Таблица цен в CS:GO</title>
-  <link rel="stylesheet" type="text/css" href="style.css">
-  <script src="script.js"></script>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Цены на предметы CS:GO</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header>
+      <h1>Цены на предметы CS:GO</h1>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th>Название предмета</th>
+          <th>Цена в Steam</th>
+          <th>Цена на CS Money</th>
+        </tr>
+      </thead>
+      <tbody id="item-table">
+      </tbody>
+    </table>
+    <script>
+      $(document).ready(function() {
+        const apiKey = "6569325A8A038A851BB8CD5870282C04";
+        const itemNames = ["AK-47 | Redline", "M4A1-S | Hyper Beast", "AWP | Asiimov"];
 
-</head>
-<body>
-  <header>
-    <h1>Цены на предметы в CS:GO</h1>
-  </header>
+        itemNames.forEach(function(itemName) {
+          $.getJSON(`https://api.csgofloat.com/?url=steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S${apiKey}A%listing%Dapp%570%2Frender%3Flistingid%3D${encodeURI(itemName)}`, function(data) {
+            const itemSteamPrice = data.assets[0].lowest_price;
+            const itemCsMoneyPrice = data.suggested_price;
 
-  <table id="itemsTable">
-    <thead>
-      <tr>
-        <th>Название предмета</th>
-        <th>Цена в Steam</th>
-        <th>Цена на cs.money</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Данные таблицы будут добавлены здесь -->
-    </tbody>
-  </table>
+            const newRow = $("<tr></tr>");
+            const nameCell = $("<td></td>").text(itemName);
+            const steamCell = $("<td></td>").text(itemSteamPrice);
+            const csMoneyCell = $("<td></td>").text(itemCsMoneyPrice);
 
-  <script src="script.js">
-    const apiKey = "6569325A8A038A851BB8CD5870282C04";
-const itemName = "AK-47 | Redline (Field-Tested)";
-const itemHashName = encodeURI(itemName);
-const appid = 730;
-const url = `https://api.csgofloat.com/?url=steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S${appid}A${itemHashName}%20D%20${apiKey}`;
-
-fetch(url)
-  .then(response => response.json())
-  .then(data => {
-    const table = document.getElementById("price-table");
-    const row = table.insertRow(-1);
-    const itemNameCell = row.insertCell(0);
-    const steamPriceCell = row.insertCell(1);
-    const csMoneyPriceCell = row.insertCell(2);
-    itemNameCell.innerHTML = itemName;
-    steamPriceCell.innerHTML = data.steam_price;
-    csMoneyPriceCell.innerHTML = data.csmoney_price;
-  })
-  .catch(error => console.log(error));
-
-  </script>
-</body>
+            newRow.append(nameCell, steamCell, csMoneyCell);
+            $("#item-table").append(newRow);
+          });
+        });
+      });
+    </script>
+  </body>
 </html>
