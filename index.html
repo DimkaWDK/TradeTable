@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Цены на предметы CS:GO</title>
+    <title>TradeTable</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
@@ -10,25 +10,30 @@
     <header>
       <h1>Цены на предметы CS:GO</h1>
     </header>
-    <table>
-      <thead>
-        <tr>
-          <th>Название предмета</th>
-          <th>Цена в Steam</th>
-          <th>Цена на CS Money</th>
-        </tr>
-      </thead>
-      <tbody id="item-table">
-      </tbody>
-    </table>
     <script type="text/javascript">
-    	$(document).ready(function() {
+      $(document).ready(function() {
   const steamApiKey = "6569325A8A038A851BB8CD5870282C04";
   const csmoneyApiKey = ""; // Здесь нужно добавить API-ключ для CS.Money, если он есть
 
-  const itemNames = ["AK-47 | Redline (Field-Tested)", "M4A1-S | Hyper Beast (Field-Tested)", "AWP | Asiimov (Field-Tested)"];
+  const itemNames = ["AK-47 | Redline", "M4A1-S | Hyper Beast", "AWP | Asiimov"];
 
+  // Формируем таблицу и добавляем пустые ячейки для цен
+  const table = $("<table></table>").addClass("item-table");
+  const tableHead = $("<thead></thead>").appendTo(table);
+  const headRow = $("<tr></tr>").appendTo(tableHead);
+  $("<th></th>").text("Название предмета").appendTo(headRow);
+  $("<th></th>").text("Цена в Steam").appendTo(headRow);
+  $("<th></th>").text("Цена на CS Money").appendTo(headRow);
+  const tableBody = $("<tbody></tbody>").attr("id", "item-table").appendTo(table);
   itemNames.forEach(function(itemName) {
+    const itemRow = $("<tr></tr>").appendTo(tableBody);
+    $("<td></td>").text(itemName).appendTo(itemRow);
+    $("<td></td>").addClass("steam-price").appendTo(itemRow);
+    $("<td></td>").addClass("csmoney-price").appendTo(itemRow);
+  });
+  $("body").append(table);
+
+  itemNames.forEach(function(itemName, index) {
     // Формируем URL для получения цены предмета на Steam
     const encodedItemName = encodeURIComponent(itemName);
     const steamUrl = `https://steamcommunity.com/market/priceoverview/?appid=730&currency=1&market_hash_name=${encodedItemName}`;
@@ -36,6 +41,7 @@
     // Получаем цену предмета на Steam
     $.getJSON(steamUrl, {jsonp: "callback"}, function(steamData) {
       const itemSteamPrice = steamData.lowest_price;
+      $(".steam-price").eq(index).text(itemSteamPrice);
 
       // Если есть API-ключ для CS.Money, получаем цену предмета на нем
       if (csmoneyApiKey) {
@@ -44,27 +50,10 @@
 
         $.getJSON(csMoneyUrl, function(csMoneyData) {
           const itemCsMoneyPrice = csMoneyData.price;
-
-          // Создаем новую строку в таблице с полученными данными
-          const newRow = $("<tr></tr>");
-          const nameCell = $("<td></td>").text(itemName);
-          const steamCell = $("<td></td>").text(itemSteamPrice);
-          const csMoneyCell = $("<td></td>").text(itemCsMoneyPrice);
-
-          newRow.append(nameCell, steamCell, csMoneyCell);
-          $("#item-table").append(newRow);
+          $(".csmoney-price").eq(index).text(itemCsMoneyPrice);
         });
-      } else { // Если нет API-ключа для CS.Money, создаем строку только с ценой на Steam
-        const newRow = $("<tr></tr>");
-        const nameCell = $("<td></td>").text(itemName);
-        const steamCell = $("<td></td>").text(itemSteamPrice);
-
-        newRow.append(nameCell, steamCell);
-        $("#item-table").append(newRow);
       }
     });
   });
 });
-    </script>
-  </body>
-</html
+</script>

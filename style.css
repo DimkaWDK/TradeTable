@@ -1,8 +1,9 @@
 body {
-  margin: 2;
+  margin: 5;
   font-family: Arial, sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   background-color: #121212;
+  padding: 22px;
 }
 
 header {
@@ -24,12 +25,14 @@ table {
 th, td {
   padding: 10px;
   text-align: center;
+  color: #fff;
 }
 
 th {
   background-color:#252525;
   color: white;
   padding: 10px;
+  border-bottom: 2px solid red;
 }
 
 tr:nth-child(even) {
