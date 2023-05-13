@@ -32,17 +32,24 @@
   });
   $("body").append(table);
 
-  itemNames.forEach(function(itemName, index) {
+  function getSteamPrice(index) {
+    if (index >= itemNames.length) {
+      return; // выходим из рекурсии, если все цены получены
+    }
+
     // Формируем URL для получения цены предмета на Steam
-    const encodedItemName = encodeURIComponent(itemName);
+    const encodedItemName = encodeURIComponent(itemNames[index]);
     const steamUrl = `https://steamcommunity.com/market/priceoverview/?appid=730&currency=1&market_hash_name=${encodedItemName}`;
 
     // Получаем цену предмета на Steam
     $.getJSON(steamUrl, {jsonp: "callback"}, function(steamData) {
       const itemSteamPrice = steamData.lowest_price;
       $(".steam-price").eq(index).text(itemSteamPrice);
+      getSteamPrice(index + 1); // рекурсивно запрашиваем цену следующего предмета
     });
-  });
+  }
+
+  getSteamPrice(0); // начинаем получение цен с первого предмета
 });
 </script>
   </body>
